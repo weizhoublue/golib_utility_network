@@ -199,3 +199,13 @@ func CheckIPTypeUnspecified( ip string ) (bool , error) {
 	return result.IsUnspecified() , nil
 }
 
+// fe80::1 -> true
+func CheckIPTypeLinkLocalUnicast( ip string ) (bool , error) {
+	result := net.ParseIP(ip)
+	if result==nil {
+		return false, fmt.Errorf("error ip=%v " , ip )
+	}
+	return result.IsLinkLocalUnicast() , nil
+}
+
+

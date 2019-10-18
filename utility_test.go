@@ -20,7 +20,7 @@ func Test_ipformat(t *testing.T){
 
 
     //
-    m:="1.1.1.1/16"
+    m:="172.19.0.0/16"
     fmt.Printf( "%s is ip with mask ? %t \n" , m , utility.CheckIPv4FormatWithMask( m )   )
 
     m="fc00::/64"
