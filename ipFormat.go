@@ -113,7 +113,7 @@ func MaskIPv4( ip string, mask int ) (string,error) {
 	if ! CheckIPv4Format(ip) {
 		return "" , fmt.Errorf("error ip=%v " , ip ) 
 	}
-	fmt.Println("ok")
+	//fmt.Println("ok")
 	r:=net.ParseIP(ip)
 	to:=r.Mask( net.CIDRMask(mask, 32)  )
 	return to.String() , nil
@@ -127,7 +127,7 @@ func MaskIPv6( ip string, mask int ) (string , error) {
 	if ! CheckIPv6Format(ip) {
 		return "" , fmt.Errorf("error ip=%v " , ip ) 
 	}
-	fmt.Println("ok")
+	//fmt.Println("ok")
 	r:=net.ParseIP(ip)
 	to:=r.Mask( net.CIDRMask(mask, 128)  )
 	return to.String() , nil
