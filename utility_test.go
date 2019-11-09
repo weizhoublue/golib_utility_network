@@ -46,6 +46,12 @@ func Test_ipformat(t *testing.T){
     fmt.Printf( "%s is ipv6 ? %t \n" , ip , utility.CheckIPv6Format( ip )   )
     
 
+    //
+    m="fc00::/64"
+    fmt.Printf( "%s is ip with mask ? %t \n" , m , utility.CheckIPv6v4FormatWithMask( m )   )
+    m="172.19.0.0/16"
+    fmt.Printf( "%s is ip with mask ? %t \n" , m , utility.CheckIPv6v4FormatWithMask( m )   )
+
 }
 
 

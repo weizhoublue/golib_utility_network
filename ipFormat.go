@@ -92,6 +92,16 @@ func CheckIPv6FormatWithMask( ip string ) (bool ) {
 }
 
 
+func CheckIPv6v4FormatWithMask( ip string ) (bool ) {
+	if CheckIPv6FormatWithMask(ip) {
+		return true
+	}
+	if CheckIPv4FormatWithMask(ip) {
+		return true
+	}
+	return false
+}
+ 
 
 //================================
 //1.1.1.1  , 16 -> 1.1.1.0
