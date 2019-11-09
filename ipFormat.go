@@ -5,7 +5,7 @@ import (
 	"strings"
 	"strconv"
 )
-
+// https://godoc.org/net
 
 //==============================
 //1.1.1.1
@@ -174,6 +174,83 @@ func CheckSameIPv6Subnet( subnet1 , subnet2 string , mask int) ( bool , error) {
 	}else{
 		return false, nil
 	}
+}
+
+
+//================================
+
+func CheckIPv4SubnetOverlay( subnet1 , subnet2 string ) ( overlay bool , err error ) {
+
+	if ! CheckIPv4FormatWithMask( subnet1 )  {
+		return false , fmt.Errorf("error ipv4 subnet=%v " , subnet1 )
+	}
+	if ! CheckIPv4FormatWithMask( subnet2 )  {
+		return false , fmt.Errorf("error ipv4 subnet=%v " , subnet2 )
+	}
+
+	ip1:=strings.Split( subnet1 , "/" )[0]
+	len1:=strings.Split( subnet1 , "/" )[1]
+	mask1 , _ :=strconv.ParseInt(len1, 10, 64)
+
+	ip2:=strings.Split( subnet2 , "/" )[0]
+	len2:=strings.Split( subnet2 , "/" )[1]
+	mask2,_:=strconv.ParseInt(len2, 10, 64)
+
+	re , er := CheckSameIPv4Subnet( ip1 , ip2 , int(mask1) )
+	if er!=nil {
+		return false , er
+	}
+	if re{
+		return true , nil
+	}
+
+	re , er = CheckSameIPv4Subnet( ip1 , ip2 , int(mask2) )
+	if er!=nil {
+		return false , er
+	}
+	if re{
+		return true , nil
+	}
+
+	return false , nil
+}
+
+
+
+func CheckIPv6SubnetOverlay( subnet1 , subnet2 string ) ( overlay bool , err error ) {
+
+	if ! CheckIPv6FormatWithMask( subnet1 )  {
+		return false , fmt.Errorf("error ipv6 subnet=%v " , subnet1 )
+	}
+	if ! CheckIPv6FormatWithMask( subnet2 )  {
+		return false , fmt.Errorf("error ipv6 subnet=%v " , subnet2 )
+	}
+
+	ip1:=strings.Split( subnet1 , "/" )[0]
+	len1:=strings.Split( subnet1 , "/" )[1]
+	mask1 , _ :=strconv.ParseInt(len1, 10, 64)
+
+	ip2:=strings.Split( subnet2 , "/" )[0]
+	len2:=strings.Split( subnet2 , "/" )[1]
+	mask2,_:=strconv.ParseInt(len2, 10, 64)
+
+	re , er := CheckSameIPv6Subnet( ip1 , ip2 , int(mask1) )
+	if er!=nil {
+		return false , er
+	}
+	if re{
+		return true , nil
+	}
+
+	re , er = CheckSameIPv6Subnet( ip1 , ip2 , int(mask2) )
+	if er!=nil {
+		return false , er
+	}
+	if re{
+		return true , nil
+	}
+
+	return false , nil
 }
 
 

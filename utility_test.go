@@ -109,6 +109,24 @@ func Test_samesubnet(t *testing.T){
     }
 
 
+    sub1:="1.1.0.0/16"
+    sub2:="1.0.0.0/8"
+    if result , err:=utility.CheckIPv4SubnetOverlay( sub1, sub2  ) ; err !=nil {
+        fmt.Printf( "failed ,  %v \n" ,    err )
+    }else{
+        fmt.Printf( "CheckIPv4SubnetOverlay result =  %v \n" ,    result )     
+    }
+
+
+    sub1="fc00:0:0:1::/64"
+    sub2="fc00::/16"
+    if result , err:=utility.CheckIPv6SubnetOverlay( sub1, sub2  ) ; err !=nil {
+        fmt.Printf( "failed ,  %v \n" ,    err )
+    }else{
+        fmt.Printf( "CheckIPv6SubnetOverlay result =  %v \n" ,    result )     
+    }
+
+
 }
 
 
