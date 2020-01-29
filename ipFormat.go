@@ -287,6 +287,7 @@ func CheckIPTypeUnspecified( ip string ) (bool , error) {
 	return result.IsUnspecified() , nil
 }
 
+// 169.254.x.x -> true
 // fe80::1 -> true
 func CheckIPTypeLinkLocalUnicast( ip string ) (bool , error) {
 	result := net.ParseIP(ip)

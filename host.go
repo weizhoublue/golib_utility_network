@@ -1,7 +1,7 @@
 package golib_utility_network
 import (
     "fmt"
-    "net"
+    "net" // https://godoc.org/net
     //"strings"
 )
 

@@ -239,8 +239,46 @@ func Test_interface(t *testing.T){
 
 
 
+func Test_type(t *testing.T){
+
+    ip:="fe80::1"
+    if r , e:=utility.CheckIPTypeLinkLocalUnicast( ip ) ; e==nil {
+        fmt.Printf( "ip %v is local type ? %v \n" ,    ip , r )
+    }else{
+        fmt.Printf( "error= %v   \n" ,    e  )        
+    }
+
+    ip="169.254.1.1"
+    if r , e:=utility.CheckIPTypeLinkLocalUnicast( ip ) ; e==nil {
+        fmt.Printf( "ip %v is local type ? %v \n" ,    ip , r )
+    }else{
+        fmt.Printf( "error= %v   \n" ,    e  )        
+    }
 
 
+}
+
+
+func Test_link(t *testing.T){
+
+    if intList , err:= utility.GetAllInterface() ; err!=nil{
+        fmt.Printf( "error= %v   \n" ,   err  )        
+    }else{
+
+        fmt.Printf( "all interface = %v   \n" ,   intList  )        
+
+    }
+
+    name:="lo0"
+    if err:=utility.SetInterfaceUp(name) ;  err!=nil {
+        fmt.Printf( "error= %v   \n" ,   err  )        
+    }else{
+        fmt.Printf( "up %v   \n" ,   name  )        
+    }
+
+
+
+}
 
 
 
