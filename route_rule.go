@@ -27,7 +27,23 @@ https://github.com/vishvananda/netlink/blob/master/netns_test.go
 
 */
 
+/*
+func GetIPv4RouteRule() ( []netlink.Rule , error ) 
+func GetIPv4RouteRuleInNetns( pid int ) ( []netlink.Rule , error ) 
+func GetIPv6RouteRule() ( []netlink.Rule , error ) 
+func GetIPv6RouteRuleInNetns( pid int ) ( []netlink.Rule , error )
 
+func CreateIPv4RouteRule( tableNum , tablePriority int , logicalNot bool , srcNet , dstNet string , InIf , OutIf string ) ( error )
+func CreateIPv4RouteRuleInNetns( pid int , tableNum , tablePriority int , logicalNot bool , srcNet , dstNet string , InIf , OutIf string ) ( error ) 
+func CreateIPv6RouteRule( tableNum , tablePriority int , logicalNot bool , srcNet , dstNet string , InIf , OutIf string ) ( error ) 
+func CreateIPv6RouteRuleInNetns( pid int , tableNum , tablePriority int , logicalNot bool , srcNet , dstNet string , InIf , OutIf string ) ( error ) 
+
+func DelIPv4RouteRule( tableNum , tablePriority int , logicalNot bool , srcNet , dstNet string ) ( error )
+func DelIPv4RouteRuleInNetns( pid int , tableNum , tablePriority int , logicalNot bool , srcNet , dstNet string , InIf , OutIf string ) ( error ) 
+func DelIPv6RouteRule( tableNum , tablePriority int , logicalNot bool , srcNet , dstNet string  ) ( error )
+func DelIPv6RouteRuleInNetns( pid int , tableNum , tablePriority int , logicalNot bool , srcNet , dstNet string , InIf , OutIf string ) ( error )
+
+*/
 
 //-------------------------------
 
@@ -47,6 +63,7 @@ func GetIPv4RouteRule() ( []netlink.Rule , error ) {
 
 func GetIPv4RouteRuleInNetns( pid int ) ( []netlink.Rule , error ) {
 
+	// when thread operate netns , goroutine should lock the thread in case that the operation goroutine switch to other thread
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	origNs, _ := netns.Get()
@@ -117,8 +134,8 @@ func CreateIPv4RouteRule( tableNum , tablePriority int , logicalNot bool , srcNe
 	ToDstNet:=net.IPNet{}
 
 	// check input 
-	if tableNum<1 && tableNum>255 {
-		return fmt.Errorf("tableNum %v outof range 1-255 " , tableNum)
+	if tableNum<=CONST_RouteTable_UNSPEC && tableNum>=CONST_RouteTable_MAX {
+		return fmt.Errorf("tableNum %v outof range " , tableNum)
 	}
 
 	if tablePriority<0 && tablePriority>32767 {
@@ -225,8 +242,8 @@ func CreateIPv6RouteRule( tableNum , tablePriority int , logicalNot bool , srcNe
 	ToDstNet:=net.IPNet{}
 
 	// check input 
-	if tableNum<1 && tableNum>255 {
-		return fmt.Errorf("tableNum %v outof range 1-255 " , tableNum)
+	if tableNum<=CONST_RouteTable_UNSPEC && tableNum>=CONST_RouteTable_MAX {
+		return fmt.Errorf("tableNum %v outof range" , tableNum)
 	}
 
 	if tablePriority<0 && tablePriority>32767 {
@@ -336,8 +353,8 @@ func DelIPv4RouteRule( tableNum , tablePriority int , logicalNot bool , srcNet ,
 	ToDstNet:=net.IPNet{}
 
 	// check input 
-	if tableNum<1 && tableNum>255 {
-		return fmt.Errorf("tableNum %v outof range 1-255 " , tableNum)
+	if tableNum<=CONST_RouteTable_UNSPEC && tableNum>=CONST_RouteTable_MAX {
+		return fmt.Errorf("tableNum %v outof range  " , tableNum)
 	}
 
 	if tablePriority<0 && tablePriority>32767 {
@@ -437,8 +454,8 @@ func DelIPv6RouteRule( tableNum , tablePriority int , logicalNot bool , srcNet ,
 	ToDstNet:=net.IPNet{}
 
 	// check input 
-	if tableNum<1 && tableNum>255 {
-		return fmt.Errorf("tableNum %v outof range 1-255 " , tableNum)
+	if tableNum<=CONST_RouteTable_UNSPEC && tableNum>=CONST_RouteTable_MAX {
+		return fmt.Errorf("tableNum %v outof range " , tableNum)
 	}
 
 	if tablePriority<0 && tablePriority>32767 {

@@ -8,6 +8,33 @@ import (
 )
 // https://godoc.org/net
 
+
+/*
+func CheckIPFormat( ip string ) bool 
+func CheckIPv4Format( ip string ) bool
+func CheckIPv6Format( ip string ) bool 
+
+func CheckIPv4FormatWithMask( ip string ) (bool ) 
+func CheckIPv6FormatWithMask( ip string ) (bool ) 
+func CheckIPv6v4FormatWithMask( ip string ) (bool ) 
+
+func MaskIPv4( ip string, mask int ) (string,error) 
+func MaskIPv6( ip string, mask int ) (string , error) 
+
+func CheckSameIPv4Subnet( subnet1 , subnet2 string , mask int) ( bool , error) 
+func CheckSameIPv6Subnet( subnet1 , subnet2 string , mask int) ( bool , error)
+
+func CheckIPv4SubnetOverlay( subnet1 , subnet2 string ) ( overlay bool , err error ) 
+func CheckIPv6SubnetOverlay( subnet1 , subnet2 string ) ( overlay bool , err error ) 
+
+func CheckIPTypeUnicast( ip string ) (bool , error) 
+func CheckIPTypeLoopback( ip string ) (bool , error) 
+func CheckIPTypeUnspecified( ip string ) (bool , error) 
+func CheckIPTypeLinkLocalUnicast( ip string ) (bool , error) 
+
+*/
+
+
 //==============================
 //1.1.1.1
 //fc00::
