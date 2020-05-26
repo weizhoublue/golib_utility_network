@@ -52,6 +52,16 @@ func Test_ipformat(t *testing.T){
     m="172.19.0.0/16"
     fmt.Printf( "%s is ip with mask ? %t \n" , m , utility.CheckIPv6v4FormatWithMask( m )   )
 
+    //
+    m="172.19.0.0/16"
+    fmt.Printf( "%s is subnet with mask ? %t \n" , m , utility.CheckIPv4SubnetWithMask( m )   )
+    m="fd00::0/64"
+    fmt.Printf( "%s is subnet with mask ? %t \n" , m , utility.CheckIPv6SubnetWithMask( m )   )
+
+
+
+
+
 }
 
 
@@ -78,6 +88,15 @@ func Test_maskip(t *testing.T){
     	fmt.Printf( "good ,  %v \n" ,    result )    	
     }
     
+
+
+    //ipv4 or ipv6
+    ip1:="fc00::"
+    ip2:="fc00:0::0"
+    re:=utility.EqualIPv6v4( ip1 , ip2 )  
+    
+    fmt.Printf( "  %v == %v ? %v \n" , ip1 , ip2 ,   re )
+
    
 
 

@@ -18,6 +18,12 @@ func CheckIPv4FormatWithMask( ip string ) (bool )
 func CheckIPv6FormatWithMask( ip string ) (bool ) 
 func CheckIPv6v4FormatWithMask( ip string ) (bool ) 
 
+func CheckIPv4SubnetWithMask( ip string ) bool
+func CheckIPv6SubnetWithMask( ip string ) bool
+
+func EqualIPv6v4( ip1 , ip2 string ) bool 
+
+
 func MaskIPv4( ip string, mask int ) (string,error) 
 func MaskIPv6( ip string, mask int ) (string , error) 
 
@@ -59,6 +65,7 @@ func CheckIPv4Format( ip string ) bool {
 }
 
 // 1.1.0.0/16
+// 1.1.0.1/16
 func CheckIPv4FormatWithMask( ip string ) (bool ) {
 	re:=strings.Split(ip, "/" )
 	if len(re)!=2{
@@ -96,7 +103,8 @@ func CheckIPv6Format( ip string ) bool {
 }
 
 
-// fc00::/64
+// fc00::1/64
+// fc00::0/64
 func CheckIPv6FormatWithMask( ip string ) (bool ) {
 	re:=strings.Split(ip, "/" )
 	if len(re)!=2{
@@ -129,9 +137,94 @@ func CheckIPv6v4FormatWithMask( ip string ) (bool ) {
 	}
 	return false
 }
- 
+
+
+
+
+
+// 1.1.0.0/16
+func CheckIPv4SubnetWithMask( ip string ) bool {
+	if CheckIPv4FormatWithMask(ip)==false{
+		return false
+	}
+
+	re:=strings.Split(ip, "/" )
+	if len(re)!=2{
+		return false 
+	}
+
+	s1, e1 := strconv.ParseInt(re[1], 10, 64)
+	if e1 != nil {
+		return false
+	}
+	subnet1 , e2:= MaskIPv4(re[0],int(s1) ) 
+	if e2!=nil {
+		return false
+	}
+
+	if EqualIPv6v4(subnet1 , re[0] ) ==false {
+		return false
+	}
+	return true
+	
+	
+}
+
+// fc00::0/64
+func CheckIPv6SubnetWithMask( ip string ) bool {
+	if CheckIPv6FormatWithMask(ip)==false{
+		return false
+	}
+
+	re:=strings.Split(ip, "/" )
+	if len(re)!=2{
+		return false 
+	}
+
+	s1, e1 := strconv.ParseInt(re[1], 10, 64)
+	if e1 != nil {
+		return false
+	}
+	subnet1 , e2:= MaskIPv6(re[0],int(s1) ) 
+	if e2!=nil {
+		return false
+	}
+
+	if EqualIPv6v4(subnet1 , re[0] ) ==false {
+		return false
+	}
+	return true
+	
+}
+
+
+
 
 //================================
+
+// fd00::  fd00:0::0 -> true
+func EqualIPv6v4( ip1 , ip2 string ) bool {
+
+	r1 := net.ParseIP(ip1)
+	if r1==nil {
+		return false
+	}
+
+	r2 := net.ParseIP(ip2)
+	if r2==nil {
+		return false
+	}
+
+	if r1.Equal(r2) {
+		return true
+	}
+	return false
+}
+
+
+
+
+
 //1.1.1.1  , 16 -> 1.1.1.0
 func MaskIPv4( ip string, mask int ) (string,error) {
 	if mask <0 || mask > 32 {
@@ -147,7 +240,7 @@ func MaskIPv4( ip string, mask int ) (string,error) {
 	return to.String() , nil
 }
 
-//fc00:0:0:1::  , 64 ->  fc00::
+//fc00:0:0:1::  , 16 ->  fc00::
 func MaskIPv6( ip string, mask int ) (string , error) {
 	if mask <0 || mask > 128 {
 		return "", fmt.Errorf("error subnet length=%v " , mask )
