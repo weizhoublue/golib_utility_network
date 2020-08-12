@@ -378,7 +378,13 @@ func CheckIPv6SubnetOverlay( subnet1 , subnet2 string ) ( overlay bool , err err
 
 //================================
 //10.1.1.1 -> true
-//fc00:: -> true
+// fc00::1 result =  true
+// 2000::1 result =  true
+// fec0::1 result =  true
+// FC00::1 result =  true
+// Fe80::1 result =  false
+// 00aa::1 result =  true
+//  ff00::1 result =  false
 func CheckIPTypeUnicast( ip string ) (bool , error) {
 	result := net.ParseIP(ip)
 	if result==nil {

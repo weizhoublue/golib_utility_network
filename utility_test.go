@@ -150,13 +150,68 @@ func Test_samesubnet(t *testing.T){
 
 
 func Test_ipType(t *testing.T){
+
+
     //ip1:="10.1.1.1"
-    ip1:="fc00::"
+    ip1:="fc00::1"
     if result , err:=utility.CheckIPTypeUnicast( ip1  ) ; err !=nil {
-    	fmt.Printf( "failed ,  %v \n" ,    err )
+        fmt.Printf( "failed ,  %v \n" ,    err )
     }else{
-    	fmt.Printf( "result =  %v \n" ,    result )    	
+        fmt.Printf( " %v result =  %v \n" ,   ip1 ,  result )     
     }
+
+    ip1="2000::1"
+    if result , err:=utility.CheckIPTypeUnicast( ip1  ) ; err !=nil {
+        fmt.Printf( "failed ,  %v \n" ,    err )
+    }else{
+        fmt.Printf( " %v result =  %v \n" ,   ip1 ,  result )     
+    }
+
+    ip1="fec0::1"
+    if result , err:=utility.CheckIPTypeUnicast( ip1  ) ; err !=nil {
+        fmt.Printf( "failed ,  %v \n" ,    err )
+    }else{
+        fmt.Printf( " %v result =  %v \n" ,   ip1 ,  result )     
+    }
+
+    ip1="FC00::0"
+    if result , err:=utility.CheckIPTypeUnicast( ip1  ) ; err !=nil {
+        fmt.Printf( "failed ,  %v \n" ,    err )
+    }else{
+        fmt.Printf( " %v result =  %v \n" ,   ip1 ,  result )     
+    }
+
+    ip1="Fe80::1"
+    if result , err:=utility.CheckIPTypeUnicast( ip1  ) ; err !=nil {
+        fmt.Printf( "failed ,  %v \n" ,    err )
+    }else{
+        fmt.Printf( " %v result =  %v \n" ,   ip1 ,  result )     
+    }
+
+    ip1="00aa::1"
+    if result , err:=utility.CheckIPTypeUnicast( ip1  ) ; err !=nil {
+        fmt.Printf( "failed ,  %v \n" ,    err )
+    }else{
+        fmt.Printf( " %v result =  %v \n" ,   ip1 ,  result )     
+    }
+
+    ip1="ff00::1"
+    if result , err:=utility.CheckIPTypeUnicast( ip1  ) ; err !=nil {
+        fmt.Printf( "failed ,  %v \n" ,    err )
+    }else{
+        fmt.Printf( " %v result =  %v \n" ,   ip1 ,  result )     
+    }
+
+    ip1="0.0.0.0"
+    if result , err:=utility.CheckIPTypeUnicast( ip1  ) ; err !=nil {
+        fmt.Printf( "failed ,  %v \n" ,    err )
+    }else{
+        fmt.Printf( " %v result =  %v \n" ,   ip1 ,  result )     
+    }
+
+
+
+    //------------------------------------------
 
 
 
@@ -259,6 +314,7 @@ func Test_interface(t *testing.T){
 
 
 func Test_type(t *testing.T){
+
 
     ip:="fe80::1"
     if r , e:=utility.CheckIPTypeLinkLocalUnicast( ip ) ; e==nil {
