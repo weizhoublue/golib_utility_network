@@ -127,31 +127,30 @@ func GetIpv4RouteDefaultFromMainTable( ) ( gw , viaInterface string ,  detailRou
 		position:=-1
 		for m , k:=range routeList {
 			if k.Gw!=nil && k.Dst==nil  {
-				//default route
-				//check priority
-				if min<0 {
+
+				if min<0 || k.Priority<min {
+					v4gw:=routeList[m].Gw.String()
+					if CheckIPv4Format(v4gw)==false{
+						// erro, found an invalid ip 
+						continue
+					}
+					//
 					min=k.Priority
 					position=m
-				}else if k.Priority<min {
-					min=k.Priority
-					position=m
+					gw=routeList[position].Gw.String()
+					if name , err := GetInterfaceNameByIndex( routeList[position].LinkIndex ) ; err!=nil {
+						return "" , "" , netlink.Route{} , fmt.Errorf("failed to find the interface, info=%v " ,err  )
+					}else{
+						viaInterface=name
+					}
+				}else{
+					continue
 				}
+
+
 			}
 		}
 		if position>=0{
-			gw=routeList[position].Gw.String()
-			index:=routeList[position].LinkIndex
-
-			if linkList , err := netlink.LinkList() ; err!=nil {
-				return "" , "" , netlink.Route{} , fmt.Errorf("failed to find the interface, info=%v " ,err  )
-			}else{
-				for _ , k :=range linkList {
-					if k.Attrs().Index==index{
-						viaInterface=k.Attrs().Name
-						break
-					}
-				}
-			}
 			return gw , viaInterface ,  routeList[position] , nil 
 		}else{
 			return "" , "" , netlink.Route{} , fmt.Errorf("no default gw")
@@ -218,22 +217,33 @@ func GetIpv6RouteDefaultFromMainTable( ) ( gw , viaInterface string ,  detailRou
 			if k.Gw!=nil && k.Dst==nil  {
 				//default route
 				//check priority
-				if min<0 {
+				if min<0 || k.Priority<min {
+					// some case reports , the default gw is ipv4 ip , so check it 
+					v6gw:=routeList[m].Gw.String()
+					if CheckIPv6Format(v6gw)==false{
+						// erro, found an ipv4 ip 
+						continue
+					}
+					//
 					min=k.Priority
 					position=m
-				}else if k.Priority<min {
-					min=k.Priority
-					position=m
+					gw=routeList[position].Gw.String()
+					if name , err := GetInterfaceNameByIndex( routeList[position].LinkIndex ) ; err!=nil {
+						return "" , "" , netlink.Route{} , fmt.Errorf("failed to find the interface, info=%v " ,err  )
+					}else{
+						viaInterface=name
+					}
+
+
+				}else{
+					continue
 				}
+
+
 			}
 		}
+
 		if position>=0{
-			gw=routeList[position].Gw.String()
-			if name , err := GetInterfaceNameByIndex( routeList[position].LinkIndex ) ; err!=nil {
-				return "" , "" , netlink.Route{} , fmt.Errorf("failed to find the interface, info=%v " ,err  )
-			}else{
-				viaInterface=name
-			}
 			return gw , viaInterface ,  routeList[position] , nil 
 		}else{
 			return "" , "" , netlink.Route{} , fmt.Errorf("no default gw")
