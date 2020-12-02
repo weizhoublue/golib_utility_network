@@ -26,6 +26,20 @@ refere example :
 https://github.com/vishvananda/netlink/blob/master/neigh_test.go
 https://github.com/vishvananda/netlink/blob/master/netns_test.go
 
+
+
+
+func GetNeighAll() ([]netlink.Neigh , error ) 
+
+func GetNeighByIp( ip string )( mac string, viaInterface string , state int , detail netlink.Neigh , e error) 
+func GetNeighByMac( mac string )( ip string, viaInterface string , state int , detail netlink.Neigh , e error) 
+
+func addNeigh( ip , mac , viaInterface string  , state int ) error 
+func delNeigh( ip , mac , viaInterface string  , state int ) error
+
+func AddPermanentNeigh( ip , mac , viaInterface string ) error 
+func DelPermanentNeigh( ip , mac , viaInterface string ) error 
+
 */
 
 
