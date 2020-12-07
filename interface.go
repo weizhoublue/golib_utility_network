@@ -222,6 +222,7 @@ func SetInterfaceDown( interfaceName string ) error {
 
 func CreateInterfaceVeth( name , vethName string ) error {
 
+	// https://godoc.org/github.com/vishvananda/netlink#Veth
 	link := &netlink.Veth{
 		LinkAttrs: netlink.LinkAttrs{
 			Name:        name ,

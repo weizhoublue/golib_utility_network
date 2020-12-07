@@ -11,6 +11,8 @@ import (
     //"strconv"
     //"strings"
 	//"github.com/vishvananda/netlink/nl"
+	//"reflect"
+	"bytes"
 )
 
 // attention ! this should be used on linux os 
@@ -30,15 +32,23 @@ https://github.com/vishvananda/netlink/blob/master/netns_test.go
 
 
 func GetNeighAll() ([]netlink.Neigh , error ) 
+func GetNeighAllByIpv4() ([]netlink.Neigh , error ) 
+func GetNeighAllByIpv6() ([]netlink.Neigh , error ) 
+
 
 func GetNeighByIp( ip string )( mac string, viaInterface string , state int , detail netlink.Neigh , e error) 
 func GetNeighByMac( mac string )( ip string, viaInterface string , state int , detail netlink.Neigh , e error) 
+func GetNeighByFilter( neighFilter netlink.Neigh ) ([]netlink.Neigh , error )
 
-func addNeigh( ip , mac , viaInterface string  , state int ) error 
-func delNeigh( ip , mac , viaInterface string  , state int ) error
 
 func AddPermanentNeigh( ip , mac , viaInterface string ) error 
 func DelPermanentNeigh( ip , mac , viaInterface string ) error 
+
+
+func DelNeighs(  enighList []netlink.Neigh  ) error 
+func DelNeighsByfilter(  enighList []netlink.Neigh  ) error 
+
+
 
 */
 
@@ -87,7 +97,32 @@ func GetNeighAll() ([]netlink.Neigh , error ) {
 	return netlink.NeighListExecute( msg )
 }
 
+func GetNeighAllByIpv4() ([]netlink.Neigh , error ) {
 
+	msg:=netlink.Ndmsg{
+		Family: uint8(2) ,
+	}
+
+	return netlink.NeighListExecute( msg )
+}
+
+
+func GetNeighAllByIpv6() ([]netlink.Neigh , error ) {
+
+	msg:=netlink.Ndmsg{
+		Family: uint8(10) ,
+	}
+
+	return netlink.NeighListExecute( msg )
+}
+
+
+
+
+
+
+
+//============================
 func GetNeighByIp( ip string )( mac string, viaInterface string , state int , detail netlink.Neigh , e error) {
 	if CheckIPFormat(ip)==false{
 		e=fmt.Errorf("%v is not an ip address" , ip)
@@ -165,10 +200,76 @@ func GetNeighByMac( mac string )( ip string, viaInterface string , state int , d
 
 
 
+func checkFilterNeighEqual( src , dst netlink.Neigh ) bool {
+	switch {
+		case dst.LinkIndex!=0 && dst.LinkIndex!= src.LinkIndex :
+			//log("neigth LinkIndex difference : %v , %v \n" , dst.LinkIndex , src.LinkIndex )
+			return false
+		case dst.Family!=0 && dst.Family!= src.Family :
+			//log("neigth Family difference : %v , %v \n" , dst.Family , src.Family )
+			return false
+		case dst.State!=0 && dst.State!= src.State :
+			//log("neigth State difference : %v , %v \n" , dst.State , src.State )
+			return false
+		case dst.Type!=0 && dst.Type!= src.Type :
+			//log("neigth Type difference : %v , %v \n" , dst.Type , src.Type )
+			return false
+		case dst.Flags!=0 && dst.Flags!= src.Flags :
+			//log("neigth Flags difference : %v , %v \n" , dst.Flags , src.Flags )
+			return false
+		case dst.Vlan!=0 && dst.Vlan!= src.Vlan :
+			//log("neigth Vlan difference : %v , %v \n" , dst.Vlan , src.Vlan )
+			return false
+		case dst.VNI!=0 && dst.VNI!= src.VNI :
+			//log("neigth VNI difference : %v , %v \n" , dst.VNI , src.VNI )
+			return false
+		case dst.MasterIndex!=0 && dst.MasterIndex!= src.MasterIndex :
+			//log("neigth MasterIndex difference : %v , %v \n" , dst.MasterIndex , src.MasterIndex )
+			return false			
+		case len(dst.HardwareAddr)!=0 && bytes.Compare( dst.HardwareAddr, src.HardwareAddr )!=0 :
+			//log("neigth HardwareAddr difference : %v , %v \n" , dst.HardwareAddr , src.HardwareAddr )
+			return false
+		case len(dst.IP)!=0 &&  dst.IP.Equal( src.IP )==false :
+			//log("neigth IP difference : =%v= , =%v= \n" , dst.IP , src.IP )
+			return false	
+		case len(dst.LLIPAddr)!=0 && dst.LLIPAddr.Equal( src.LLIPAddr )==false :
+			//log("neigth LLIPAddr difference : %v , %v \n" , dst.LLIPAddr , src.LLIPAddr )
+			return false	
+	}
+	return true
+
+}
+
+
+func GetNeighByFilter( neighFilter netlink.Neigh ) ([]netlink.Neigh , error ) {
+
+	msg:=netlink.Ndmsg{
+		Family: uint8(0) ,
+	}
+
+	neighList  , e := netlink.NeighListExecute( msg )
+	if e!=nil {
+		return nil , e
+	}else if len(neighList)==0 {
+		return []netlink.Neigh{} , nil
+	}
+
+	result:=[]netlink.Neigh{}
+	for _ , nei := range neighList {
+		if checkFilterNeighEqual( nei ,  neighFilter )==true{
+			result=append(result , nei )
+		}
+	}
+
+	return result , nil
+}
+
+
+
 
 //=================================
 
-
+// ip can be ipv4 or ipv6
 func addNeigh( ip , mac , viaInterface string  , state int ) error {
 
 	toIp :=net.ParseIP(ip)
@@ -197,6 +298,7 @@ func addNeigh( ip , mac , viaInterface string  , state int ) error {
 	if err != nil {
 		return err
 	}
+	log("create neigh: %v %v via %v \n" ,ip , mac , viaInterface )
 	return nil
 }
 
@@ -228,6 +330,9 @@ func delNeigh( ip , mac , viaInterface string  , state int ) error {
 	if err != nil {
 		return err
 	}
+
+	log("del neigh: %v %v via %v \n" ,ip , mac , viaInterface )
+
 	return nil
 }
 
@@ -238,6 +343,37 @@ func AddPermanentNeigh( ip , mac , viaInterface string ) error {
 
 func DelPermanentNeigh( ip , mac , viaInterface string ) error {
 	return delNeigh( ip , mac , viaInterface , CONST_NeighState_permanent )
+}
+
+
+
+func DelNeighs(  nenighList []netlink.Neigh  ) error {
+	if len(nenighList)==0 {
+		return nil
+	}
+	if nenighList==nil {
+		return fmt.Errorf( "empty enighList input "  )
+	}
+
+	for _ , neigh := range nenighList {
+		if e:=netlink.NeighDel( &neigh ) ; e!=nil {
+			return e
+		}
+		log("del neighbor entry: %v \n" , neigh )
+	}
+
+	return nil
+
+}
+
+func DelNeighsByfilter(  neighFilter netlink.Neigh  ) error {
+ 	neighList , e := GetNeighByFilter( neighFilter )
+ 	if e!=nil {
+ 		return e
+ 	}
+
+ 	return DelNeighs(neighList)
+
 }
 
 

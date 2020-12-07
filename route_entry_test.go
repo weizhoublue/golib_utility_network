@@ -19,12 +19,26 @@ func Test_ipv4route(t *testing.T){
     }else{
         for _ , k := range entrys {
             fmt.Printf( " ------------   \n"  )
-            // https://godoc.org/github.com/vishvananda/netlink#Rule
+            // https://godoc.org/github.com/vishvananda/netlink#Route
             fmt.Printf( " entry = %v   \n" ,   k  )
 
         }
     }
 
+            fmt.Printf( " \n \n  \n"  )
+
+
+
+    if entrys , err:= utility.GetIpv6RouteAllEntryByTable( 255 ) ; err!=nil{
+        fmt.Printf( "error= %v   \n" ,   err  )        
+    }else{
+        for _ , k := range entrys {
+            fmt.Printf( " ------------   \n"  )
+            // https://godoc.org/github.com/vishvananda/netlink#Route
+            fmt.Printf( " entry = %v   \n" ,   k  )
+
+        }
+    }
 
 
 }
@@ -38,7 +52,7 @@ func Test_ipv6route(t *testing.T){
     }else{
         for _ , k := range entrys {
             fmt.Printf( " ------------   \n"  )
-            // https://godoc.org/github.com/vishvananda/netlink#Rule
+            // https://godoc.org/github.com/vishvananda/netlink#Route
             fmt.Printf( " entry = %v   \n" ,   k  )
 
         }
@@ -51,9 +65,54 @@ func Test_ipv6route(t *testing.T){
 
 
 
+func Test_checkroutetable(t *testing.T){
+
+    if entrys , err:= utility.GetIpv4RouteAllEntryByTable( 102 ) ; err!=nil{
+        fmt.Printf( "error= %v   \n" ,   err  )        
+    }else{
+        for _ , k := range entrys {
+            fmt.Printf( " ------------   \n"  )
+            // https://godoc.org/github.com/vishvananda/netlink#Route
+            fmt.Printf( " entry = %v   \n" ,   k  )
+
+        }
+    }
+
+
+}
+
+
+
+
+
+func Test_ipv4delroute(t *testing.T){
+
+    table:=101
+    dstNet:=""
+    viaHost:="10.6.111.1" 
+    viaInterface:="dce-ext"
+
+    if  err:= utility.CreateIPv4RouteEntry(  table , dstNet , viaHost , viaInterface ) ; err!=nil{
+        fmt.Printf( "error= %v   \n" ,   err  )        
+    }else{
+        fmt.Printf( " create ipv4 route \n"   )
+    }
+
+
+
+    if  errList:= utility.DelIPv4AllRouteByTable(  table  ) ; errList!=nil{
+        fmt.Printf( "error= %v   \n" ,   errList  )        
+    }else{
+        fmt.Printf( " del all route \n"   )
+    }
+
+
+}
+
+
 func Test_ipv4entry(t *testing.T){
 
-    if gw , viaInterface , detail , err:= utility.GetIpv4RouteDefaultFromMainTable() ; err!=nil{
+    if gw , viaInterface , detail , err:= utility.GetIpv4RouteDefaultByTable( utility.CONST_RouteTable_MAIN ) ; err!=nil{
         fmt.Printf( "error= %v   \n" ,   err  )        
     }else{
         fmt.Printf( " entry = %v , %v , %v   \n" ,   gw , viaInterface , detail  )
@@ -114,7 +173,7 @@ func Test_ipv4entry(t *testing.T){
 
 func Test_ipv6entry(t *testing.T){
 
-    if gw , viaInterface , detail , err:= utility.GetIpv6RouteDefaultFromMainTable() ; err!=nil{
+    if gw , viaInterface , detail , err:= utility.GetIpv6RouteDefaultByTable( utility.CONST_RouteTable_MAIN ) ; err!=nil{
         fmt.Printf( "error= %v   \n" ,   err  )        
     }else{
         fmt.Printf( " entry = %v , %v , %v   \n" ,   gw , viaInterface , detail  )

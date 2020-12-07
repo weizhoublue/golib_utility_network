@@ -30,15 +30,20 @@ https://github.com/vishvananda/netlink/blob/master/netns_test.go
 
 
 /*
-func GetIpv4RouteAllEntryFromSpecifiedTable( tableNum int )([]netlink.Route , error )
+func GetIpv4RouteAllEntryByTable( tableNum int )([]netlink.Route , error )
 func GetIpv4RouteAllEntryFromAllTable( ) ([]netlink.Route , error )
 func GetIpv4RouteAllEntryFromMainTable( ) ([]netlink.Route , error )
-func GetIpv4RouteDefaultFromMainTable( ) ( gw , viaInterface string ,  detailRoute netlink.Route , e error )
+func GetIpv4RouteAllEntryFromLocalTable( ) ([]netlink.Route , error )
 
-func GetIpv6RouteAllEntryFromSpecifiedTable( tableNum int )([]netlink.Route , error )
+func GetIpv4RouteDefaultByTable( tableNum int  ) ( gw , viaInterface string ,  detailRoute netlink.Route , e error )
+
+
+
+func GetIpv6RouteAllEntryByTable( tableNum int )([]netlink.Route , error )
 func GetIpv6RouteAllEntryFromAllTable( ) ([]netlink.Route , error )
 func GetIpv6RouteAllEntryFromMainTable( ) ([]netlink.Route , error )
-func GetIpv6RouteDefaultFromMainTable( ) ( gw , viaInterface string ,  detailRoute netlink.Route , e error )
+
+func GetIpv6RouteDefaultByTable( tableNum int ) ( gw , viaInterface string ,  detailRoute netlink.Route , e error )
 
 func CalculateIpv4RouteByDst( dst string ) ( []netlink.Route , error )
 func CalculateIpv6RouteByDst( dst string ) ( []netlink.Route , error )
@@ -48,6 +53,10 @@ func DelIPv4RouteEntry( tableNum  int  , dstNet , viaHost , viaInterface string 
 
 func CreateIPv6RouteEntry( tableNum  int  , dstNet , viaHost , viaInterface string  ) ( error ) 
 func DelIPv6RouteEntry( tableNum  int  , dstNet , viaHost , viaInterface string  ) ( error ) 
+
+func DelIPv4AllRouteByTable( tableNum  int  ) ( error ) 
+func DelIPv6AllRouteByTable( tableNum  int  ) ( error ) 
+
 
 */
 
@@ -88,9 +97,11 @@ type Route struct {
     AdvMSS     int
     Hoplimit   int
 }
-
 */
-func GetIpv4RouteAllEntryFromSpecifiedTable( tableNum int )([]netlink.Route , error ){
+// 	CONST_RouteTable_MAIN 
+//	CONST_RouteTable_DEFAULT 
+//	CONST_RouteTable_LOCAL  
+func GetIpv4RouteAllEntryByTable( tableNum int )([]netlink.Route , error ){
 
 	routeFilter := &netlink.Route{
 		Table: tableNum ,
@@ -107,18 +118,29 @@ func GetIpv4RouteAllEntryFromSpecifiedTable( tableNum int )([]netlink.Route , er
 
 func GetIpv4RouteAllEntryFromAllTable( ) ([]netlink.Route , error ){
 
-	return GetIpv4RouteAllEntryFromSpecifiedTable(unix.RT_TABLE_UNSPEC)
+	return GetIpv4RouteAllEntryByTable(unix.RT_TABLE_UNSPEC)
 
 }
 
 func GetIpv4RouteAllEntryFromMainTable( ) ([]netlink.Route , error ){
 
-	return GetIpv4RouteAllEntryFromSpecifiedTable(unix.RT_TABLE_MAIN)
+	return GetIpv4RouteAllEntryByTable(unix.RT_TABLE_MAIN)
 
 }
 
 
-func GetIpv4RouteDefaultFromMainTable( ) ( gw , viaInterface string ,  detailRoute netlink.Route , e error ){
+func GetIpv4RouteAllEntryFromLocalTable( ) ([]netlink.Route , error ){
+
+	return GetIpv4RouteAllEntryByTable(unix.RT_TABLE_LOCAL)
+
+}
+
+
+
+// 	CONST_RouteTable_MAIN 
+//	CONST_RouteTable_DEFAULT 
+//	CONST_RouteTable_LOCAL  
+func GetIpv4RouteDefaultByTable( tableNum int ) ( gw , viaInterface string ,  detailRoute netlink.Route , e error ){
 
 	if routeList, err:=GetIpv4RouteAllEntryFromMainTable(); err!=nil{
 		return "" , "" , netlink.Route{} , err
@@ -126,7 +148,7 @@ func GetIpv4RouteDefaultFromMainTable( ) ( gw , viaInterface string ,  detailRou
 		min:=-1
 		position:=-1
 		for m , k:=range routeList {
-			if k.Gw!=nil && k.Dst==nil  {
+			if k.Gw!=nil && k.Dst==nil  &&  k.Table == tableNum {
 
 				if min<0 || k.Priority<min {
 					v4gw:=routeList[m].Gw.String()
@@ -178,7 +200,7 @@ func CalculateIpv4RouteByDst( dst string ) ( []netlink.Route , error ){
 Route
 https://godoc.org/github.com/vishvananda/netlink#Route
 */
-func GetIpv6RouteAllEntryFromSpecifiedTable( tableNum int )([]netlink.Route , error ){
+func GetIpv6RouteAllEntryByTable( tableNum int )([]netlink.Route , error ){
 
 	routeFilter := &netlink.Route{
 		Table: tableNum ,
@@ -195,18 +217,18 @@ func GetIpv6RouteAllEntryFromSpecifiedTable( tableNum int )([]netlink.Route , er
 
 func GetIpv6RouteAllEntryFromAllTable( ) ([]netlink.Route , error ){
 
-	return GetIpv6RouteAllEntryFromSpecifiedTable(unix.RT_TABLE_UNSPEC)
+	return GetIpv6RouteAllEntryByTable(unix.RT_TABLE_UNSPEC)
 
 }
 
 func GetIpv6RouteAllEntryFromMainTable( ) ([]netlink.Route , error ){
 
-	return GetIpv6RouteAllEntryFromSpecifiedTable(unix.RT_TABLE_MAIN)
+	return GetIpv6RouteAllEntryByTable(unix.RT_TABLE_MAIN)
 
 }
 
 
-func GetIpv6RouteDefaultFromMainTable( ) ( gw , viaInterface string ,  detailRoute netlink.Route , e error ){
+func GetIpv6RouteDefaultByTable( tableNum int ) ( gw , viaInterface string ,  detailRoute netlink.Route , e error ){
 
 	if routeList, err:=GetIpv6RouteAllEntryFromMainTable(); err!=nil{
 		return "" , "" , netlink.Route{} , err
@@ -214,7 +236,7 @@ func GetIpv6RouteDefaultFromMainTable( ) ( gw , viaInterface string ,  detailRou
 		min:=-1
 		position:=-1
 		for m , k:=range routeList {
-			if k.Gw!=nil && k.Dst==nil  {
+			if k.Gw!=nil && k.Dst==nil && k.Table==tableNum {
 				//default route
 				//check priority
 				if min<0 || k.Priority<min {
@@ -504,6 +526,44 @@ func DelIPv6RouteEntry( tableNum  int  , dstNet , viaHost , viaInterface string 
 
 
 
+
+
+func DelIPv4AllRouteByTable( tableNum  int  ) ( []error ) {
+
+	log("delete all ipv6 route under table %v \n", tableNum)
+	routeList , e := GetIpv4RouteAllEntryByTable( tableNum  ) 
+	if e!=nil {
+		return nil
+	}
+
+	errList := []error{}
+	for _ , route := range routeList {
+		if err := netlink.RouteDel(&route); err != nil {
+			errList=append(errList , err )
+		}
+	}
+	return nil
+
+}
+
+
+func DelIPv6AllRouteByTable( tableNum  int  ) ( []error ) {
+
+	log("delete all ipv4 route under table %v \n", tableNum)
+	routeList , e := GetIpv6RouteAllEntryByTable( tableNum  ) 
+	if e!=nil {
+		return nil
+	}
+
+	errList := []error{}
+	for _ , route := range routeList {
+		if err := netlink.RouteDel(&route); err != nil {
+			errList=append(errList , err )
+		}
+	}
+	return nil
+
+}
 
 
 
