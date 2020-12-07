@@ -347,29 +347,30 @@ func DelPermanentNeigh( ip , mac , viaInterface string ) error {
 
 
 
-func DelNeighs(  nenighList []netlink.Neigh  ) error {
+func DelNeighs(  nenighList []netlink.Neigh  ) []error {
 	if len(nenighList)==0 {
 		return nil
 	}
 	if nenighList==nil {
-		return fmt.Errorf( "empty enighList input "  )
+		return []error{ fmt.Errorf( "empty enighList input "  ) }
 	}
 
+	errList:=[]error{}
 	for _ , neigh := range nenighList {
 		if e:=netlink.NeighDel( &neigh ) ; e!=nil {
-			return e
+			errList=append(errList , e)
 		}
 		log("del neighbor entry: %v \n" , neigh )
 	}
 
-	return nil
+	return errList
 
 }
 
-func DelNeighsByfilter(  neighFilter netlink.Neigh  ) error {
+func DelNeighsByfilter(  neighFilter netlink.Neigh  ) []error {
  	neighList , e := GetNeighByFilter( neighFilter )
  	if e!=nil {
- 		return e
+ 		return []error{ e }
  	}
 
  	return DelNeighs(neighList)

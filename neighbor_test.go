@@ -158,7 +158,7 @@ func Test_neidel(t *testing.T){
         HardwareAddr: mac1 ,
         LinkIndex: linkAttr.Index ,
     }
-    if err:= utility.DelNeighsByfilter(neighFilter) ; err!=nil{
+    if errlist := utility.DelNeighsByfilter(neighFilter) ; len(errlist)!=0 {
         fmt.Printf( "error= %v   \n" ,   err  )        
     }else{
             fmt.Printf( " del entry  \n" )
