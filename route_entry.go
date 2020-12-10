@@ -160,10 +160,10 @@ func GetIpv4RouteDefaultByTable( tableNum int ) ( gw , viaInterface string ,  de
 					min=k.Priority
 					position=m
 					gw=routeList[position].Gw.String()
-					if name , err := GetInterfaceNameByIndex( routeList[position].LinkIndex ) ; err!=nil {
+					if link , err := GetInterfaceNameByIndex( routeList[position].LinkIndex ) ; err!=nil {
 						return "" , "" , netlink.Route{} , fmt.Errorf("failed to find the interface, info=%v " ,err  )
 					}else{
-						viaInterface=name
+						viaInterface=link.Attrs().Name
 					}
 				}else{
 					continue
@@ -250,10 +250,10 @@ func GetIpv6RouteDefaultByTable( tableNum int ) ( gw , viaInterface string ,  de
 					min=k.Priority
 					position=m
 					gw=routeList[position].Gw.String()
-					if name , err := GetInterfaceNameByIndex( routeList[position].LinkIndex ) ; err!=nil {
+					if link , err := GetInterfaceNameByIndex( routeList[position].LinkIndex ) ; err!=nil {
 						return "" , "" , netlink.Route{} , fmt.Errorf("failed to find the interface, info=%v " ,err  )
 					}else{
-						viaInterface=name
+						viaInterface=link.Attrs().Name
 					}
 
 

@@ -135,10 +135,10 @@ func GetNeighByIp( ip string )( mac string, viaInterface string , state int , de
 	}else{
 		for _ , v :=range neighList {
 			if v.IP.String()==ip {
-				if name , err:=GetInterfaceNameByIndex(v.LinkIndex) ; err!=nil{
+				if link , err:=GetInterfaceNameByIndex(v.LinkIndex) ; err!=nil{
 					continue 
 				}else{
-					viaInterface=name
+					viaInterface= link.Attrs().Name
 					if len(viaInterface)==0 {
 						continue 
 					}
@@ -173,10 +173,10 @@ func GetNeighByMac( mac string )( ip string, viaInterface string , state int , d
 	}else{
 		for _ , v :=range neighList {
 			if v.HardwareAddr.String()==mac {
-				if name , err:=GetInterfaceNameByIndex(v.LinkIndex) ; err!=nil{
+				if link , err:=GetInterfaceNameByIndex(v.LinkIndex) ; err!=nil{
 					continue 
 				}else{
-					viaInterface=name
+					viaInterface=link.Attrs().Name
 					if len(viaInterface)==0 {
 						continue 
 					}

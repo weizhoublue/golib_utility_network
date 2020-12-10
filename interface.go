@@ -46,8 +46,10 @@ func GetAllInterfaceInNetns( pid int )( []netlink.Link , error )
 
 func GetInterfaceByName( name string )( netlink.Link , error )
 func GetInterfaceByNameInNetns( pid int , name string )( netlink.Link , error )
-func GetInterfaceNameByIndex( index int )( string , error )
-func GetInterfaceNameByIndexInNetns( pid int , index int )( string , error )
+func GetInterfaceNameByIndex( index int )( netlink.Link , error )
+func GetInterfaceNameByIndexInNetns( pid int , index int )( netlink.Link , error )
+func GetInterfaceChildByName( name string )( []netlink.Link , error )
+
 
 func SetInterfaceUp( interfaceName string ) error 
 func SetInterfaceDown( interfaceName string ) error 
@@ -150,15 +152,15 @@ func GetInterfaceByNameInNetns( pid int , name string )( netlink.Link , error ){
 }
 
 
-func GetInterfaceNameByIndex( index int )( string , error ){
+func GetInterfaceNameByIndex( index int )( netlink.Link , error ){
 	if link , err:=netlink.LinkByIndex(index) ; err!=nil{
-		return "" , err
+		return nil , err
 	}else{
-		return link.Attrs().Name , nil
+		return link , nil
 	}
 }
 
-func GetInterfaceNameByIndexInNetns( pid int , index int )( string , error ){
+func GetInterfaceNameByIndexInNetns( pid int , index int )( netlink.Link , error ){
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	origNs, _ := netns.Get()
@@ -170,18 +172,41 @@ func GetInterfaceNameByIndexInNetns( pid int , index int )( string , error ){
 	}()
 
 	if f , e:=netns.GetFromPid(pid); e!=nil{
-		return "" , e
+		return nil , e
 
 	}else{
 		defer f.Close()
 
 		if e:=netns.Set(f) ; e!=nil {
-			return "" , e
+			return nil , e
 		}
 		return GetInterfaceNameByIndex(index)
 	}
 }
 
+
+func GetInterfaceChildByName( name string )( []netlink.Link , error ){
+	if Parlink , e:= GetInterfaceByName( name  ) ; e!=nil {
+		return nil , e
+	}else{
+
+		allInt , e:=GetAllInterface( )
+		if e!=nil {
+			return nil , e
+		}
+
+		childIntList:=[]netlink.Link{}
+		for _ , v :=range allInt {
+			if v.Attrs().ParentIndex == Parlink.Attrs().Index {
+				childIntList=append(childIntList,v)
+			}
+		}
+
+		return childIntList , nil
+
+	}
+
+}
 
 
 //================================

@@ -18,6 +18,8 @@ func Test_info(t *testing.T){
 
             fmt.Printf( " interface type = %v   \n" ,   k.Type()  )
             fmt.Printf( " interface name = %v   \n" ,   k.Attrs().Name  )        
+            fmt.Printf( " interface ParentIndex = %v   \n" ,   k.Attrs().ParentIndex  )        
+            fmt.Printf( " interface MasterIndex = %v   \n" ,   k.Attrs().MasterIndex  )        
             fmt.Printf( " interface info = %v   \n" ,   k.Attrs()  )        
             fmt.Printf( " ------------   \n"  )
 
