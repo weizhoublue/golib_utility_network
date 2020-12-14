@@ -24,11 +24,11 @@ func CheckIPv6SubnetWithMask( ip string ) bool
 func EqualIPv6v4( ip1 , ip2 string ) bool 
 
 
-func MaskIPv4( ip string, mask int ) (string,error) 
-func MaskIPv6( ip string, mask int ) (string , error) 
+func MaskIPv4( ip , mask string ) (string,error) {
+func MaskIPv6( ip , mask string ) (string , error) 
 
-func CheckSameIPv4Subnet( subnet1 , subnet2 string , mask int) ( bool , error) 
-func CheckSameIPv6Subnet( subnet1 , subnet2 string , mask int) ( bool , error)
+func CheckSameIPv4Subnet( subnet1 , subnet2 , mask string ) ( bool , error) {
+func CheckSameIPv6Subnet( subnet1 , subnet2  , mask string ) ( bool , error)
 
 func CheckIPv4SubnetOverlay( subnet1 , subnet2 string ) ( overlay bool , err error ) 
 func CheckIPv6SubnetOverlay( subnet1 , subnet2 string ) ( overlay bool , err error ) 
@@ -153,11 +153,7 @@ func CheckIPv4SubnetWithMask( ip string ) bool {
 		return false 
 	}
 
-	s1, e1 := strconv.ParseInt(re[1], 10, 64)
-	if e1 != nil {
-		return false
-	}
-	subnet1 , e2:= MaskIPv4(re[0],int(s1) ) 
+	subnet1 , e2:= MaskIPv4(re[0], re[1] ) 
 	if e2!=nil {
 		return false
 	}
@@ -181,11 +177,7 @@ func CheckIPv6SubnetWithMask( ip string ) bool {
 		return false 
 	}
 
-	s1, e1 := strconv.ParseInt(re[1], 10, 64)
-	if e1 != nil {
-		return false
-	}
-	subnet1 , e2:= MaskIPv6(re[0],int(s1) ) 
+	subnet1 , e2:= MaskIPv6(re[0],re[1] ) 
 	if e2!=nil {
 		return false
 	}
@@ -226,31 +218,45 @@ func EqualIPv6v4( ip1 , ip2 string ) bool {
 
 
 //1.1.1.1  , 16 -> 1.1.1.0
-func MaskIPv4( ip string, mask int ) (string,error) {
-	if mask <0 || mask > 32 {
-		return "", fmt.Errorf("error subnet length=%v " , mask )
+func MaskIPv4( ip , mask string ) (string,error) {
+
+	length , e := strconv.ParseInt(mask, 10, 32)
+	if e != nil {
+	    return "", fmt.Errorf("wrong mask %v , info=%v ", mask , e ) 
 	}
+
+	if length <0 || length > 32 {
+		return "", fmt.Errorf("error subnet length=%v " , length )
+	}
+
 
 	if ! CheckIPv4Format(ip) {
 		return "" , fmt.Errorf("error ip=%v " , ip ) 
 	}
 	//fmt.Println("ok")
 	r:=net.ParseIP(ip)
-	to:=r.Mask( net.CIDRMask(mask, 32)  )
+	to:=r.Mask( net.CIDRMask( int(length) , 32)  )
 	return to.String() , nil
 }
 
 //fc00:0:0:1::  , 16 ->  fc00::
-func MaskIPv6( ip string, mask int ) (string , error) {
-	if mask <0 || mask > 128 {
-		return "", fmt.Errorf("error subnet length=%v " , mask )
+func MaskIPv6( ip , mask string ) (string , error) {
+
+	length , e := strconv.ParseInt(mask, 10, 32)
+	if e != nil {
+	    return "", fmt.Errorf("wrong mask %v , info=%v ", mask , e ) 
 	}
+
+	if length <0 || length > 128 {
+		return "", fmt.Errorf("error subnet length=%v " , length )
+	}
+
 	if ! CheckIPv6Format(ip) {
 		return "" , fmt.Errorf("error ip=%v " , ip ) 
 	}
 	//fmt.Println("ok")
 	r:=net.ParseIP(ip)
-	to:=r.Mask( net.CIDRMask(mask, 128)  )
+	to:=r.Mask( net.CIDRMask( int(length) , 128)  )
 	return to.String() , nil
 }
 
@@ -258,10 +264,7 @@ func MaskIPv6( ip string, mask int ) (string , error) {
 
 //================================
 //1.1.1.0 , 1.1.0.0 , 16 -> true
-func CheckSameIPv4Subnet( subnet1 , subnet2 string , mask int) ( bool , error) {
-	if mask <0 || mask >32 {
-		return false , fmt.Errorf("error subnet length=%v " , mask )
-	}
+func CheckSameIPv4Subnet( subnet1 , subnet2 , mask string ) ( bool , error) {
 	var err error
 	var one , two string
 	if one , err =MaskIPv4(subnet1 , mask) ; err!=nil{
@@ -278,10 +281,8 @@ func CheckSameIPv4Subnet( subnet1 , subnet2 string , mask int) ( bool , error) {
 }
 
 //fc00:0:0:1:: , fc00:0:0:2::  , 64 ->  false
-func CheckSameIPv6Subnet( subnet1 , subnet2 string , mask int) ( bool , error) {
-	if mask <0 || mask >128  {
-		return false , fmt.Errorf("error subnet length=%v " , mask )
-	}
+func CheckSameIPv6Subnet( subnet1 , subnet2 , mask string ) ( bool , error) {
+
 	var err error
 	var one , two string
 	if one , err =MaskIPv6(subnet1 , mask) ; err!=nil{
@@ -311,13 +312,11 @@ func CheckIPv4SubnetOverlay( subnet1 , subnet2 string ) ( overlay bool , err err
 
 	ip1:=strings.Split( subnet1 , "/" )[0]
 	len1:=strings.Split( subnet1 , "/" )[1]
-	mask1 , _ :=strconv.ParseInt(len1, 10, 64)
 
 	ip2:=strings.Split( subnet2 , "/" )[0]
 	len2:=strings.Split( subnet2 , "/" )[1]
-	mask2,_:=strconv.ParseInt(len2, 10, 64)
 
-	re , er := CheckSameIPv4Subnet( ip1 , ip2 , int(mask1) )
+	re , er := CheckSameIPv4Subnet( ip1 , ip2 , len1 )
 	if er!=nil {
 		return false , er
 	}
@@ -325,7 +324,7 @@ func CheckIPv4SubnetOverlay( subnet1 , subnet2 string ) ( overlay bool , err err
 		return true , nil
 	}
 
-	re , er = CheckSameIPv4Subnet( ip1 , ip2 , int(mask2) )
+	re , er = CheckSameIPv4Subnet( ip1 , ip2 , len2 )
 	if er!=nil {
 		return false , er
 	}
@@ -349,13 +348,11 @@ func CheckIPv6SubnetOverlay( subnet1 , subnet2 string ) ( overlay bool , err err
 
 	ip1:=strings.Split( subnet1 , "/" )[0]
 	len1:=strings.Split( subnet1 , "/" )[1]
-	mask1 , _ :=strconv.ParseInt(len1, 10, 64)
 
 	ip2:=strings.Split( subnet2 , "/" )[0]
 	len2:=strings.Split( subnet2 , "/" )[1]
-	mask2,_:=strconv.ParseInt(len2, 10, 64)
 
-	re , er := CheckSameIPv6Subnet( ip1 , ip2 , int(mask1) )
+	re , er := CheckSameIPv6Subnet( ip1 , ip2 , len1 )
 	if er!=nil {
 		return false , er
 	}
@@ -363,7 +360,7 @@ func CheckIPv6SubnetOverlay( subnet1 , subnet2 string ) ( overlay bool , err err
 		return true , nil
 	}
 
-	re , er = CheckSameIPv6Subnet( ip1 , ip2 , int(mask2) )
+	re , er = CheckSameIPv6Subnet( ip1 , ip2 , len2 )
 	if er!=nil {
 		return false , er
 	}

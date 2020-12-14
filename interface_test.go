@@ -148,6 +148,12 @@ func Test_VlanAdddel(t *testing.T){
 
 }
 
+func Test_addr(t *testing.T){
 
+    ipv4_list , ipv6_list  , _ :=utility.GetInterfaceUnicastAddrByName( "dce-mng" ) 
+    fmt.Printf( " ipv4_list=%v   \n"  , ipv4_list ) 
+    fmt.Printf( " ipv6_list=%v   \n"  , ipv6_list ) 
+
+}
 
 

@@ -73,7 +73,7 @@ func Test_maskip(t *testing.T){
 
 	//ipv4 or ipv6
     ip="1.1.1.0"
-    if result , err:=utility.MaskIPv4( ip , 34) ; err !=nil {
+    if result , err:=utility.MaskIPv4( ip , "34" ) ; err !=nil {
     	fmt.Printf( "failed ,  %v \n" ,    err )
     }else{
     	fmt.Printf( "good ,  %v \n" ,    result )    	
@@ -82,7 +82,7 @@ func Test_maskip(t *testing.T){
 
 	//ipv4 or ipv6
     ip="fc00:0:0:1::"
-    if result , err:=utility.MaskIPv6( ip , 16) ; err !=nil {
+    if result , err:=utility.MaskIPv6( ip , "16" ) ; err !=nil {
     	fmt.Printf( "failed ,  %v \n" ,    err )
     }else{
     	fmt.Printf( "good ,  %v \n" ,    result )    	
@@ -107,7 +107,7 @@ func Test_samesubnet(t *testing.T){
 
     ip1:="1.1.1.0"
     ip2:="1.1.0.0"
-    length1:=24
+    length1:="24"
     //length1:=16
     if result , err:=utility.CheckSameIPv4Subnet( ip1, ip2 , length1 ) ; err !=nil {
     	fmt.Printf( "failed ,  %v \n" ,    err )
@@ -119,7 +119,7 @@ func Test_samesubnet(t *testing.T){
 
     ip3:="fc00:0:0:1::"
     ip4:="fc00:0:0:2::"
-    length2:=0
+    length2:="0"
     //length1:=16
     if result , err:=utility.CheckSameIPv6Subnet( ip3, ip4 , length2 ) ; err !=nil {
     	fmt.Printf( "failed ,  %v \n" ,    err )
