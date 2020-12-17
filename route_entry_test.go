@@ -246,6 +246,9 @@ func Test_raw(t *testing.T){
             fmt.Printf("%v \n" , err)
     }
 
+    if err := netlink.RouteDel(&m); err != nil {
+            fmt.Printf("failed to del  %v \n" , err)
+    }
 
 
     n:=netlink.Route{

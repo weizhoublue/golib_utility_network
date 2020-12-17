@@ -159,7 +159,7 @@ func Test_neidel(t *testing.T){
         LinkIndex: linkAttr.Index ,
     }
     if errlist := utility.DelNeighsByfilter(neighFilter) ; len(errlist)!=0 {
-        fmt.Printf( "error= %v   \n" ,   err  )        
+        fmt.Printf( "error= %v   \n" ,   errlist  )        
     }else{
             fmt.Printf( " del entry  \n" )
 
@@ -167,3 +167,42 @@ func Test_neidel(t *testing.T){
 
 
 }
+
+
+
+func Test_neidelRaw(t *testing.T){
+
+
+
+    podMac , _ :=net.ParseMAC( "d0:4f:ac:14:01:12" )
+
+        entry := netlink.Neigh {
+            // 必填以下三个即可
+            LinkIndex: 437  ,
+            IP:        net.ParseIP("172.20.1.18") ,
+            HardwareAddr:  podMac ,
+        }
+
+        if err := netlink.NeighDel(&entry); err != nil {
+            fmt.Printf(  "----- failed to del neighbor=%v , info=%v \n" , entry , err )
+        }else{
+           fmt.Printf(  "----- del pod neighbor entry=%+v \n" , entry )
+        }
+
+
+    // ip:="172.20.1.18"
+    // neighFilter:=netlink.Neigh{
+    //     IP: net.ParseIP(ip) ,
+    // }
+    // if errlist := utility.DelNeighsByfilter(neighFilter) ; len(errlist)!=0 {
+    //     fmt.Printf( "error= %v   \n" ,   errlist  )        
+    // }else{
+    //         fmt.Printf( " del entry  \n" )
+
+    // }
+
+
+}
+
+
+
