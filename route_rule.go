@@ -187,6 +187,7 @@ func CreateIPv4RouteRule( tableNum , tablePriority int , logicalNot bool , srcNe
 
 	rule := netlink.NewRule()
 	rule.Table = tableNum
+	rule.Family = unix.AF_INET
 	rule.Src = &ToSrcNet
 	rule.Dst = &ToDstNet
 	rule.Priority = tablePriority
@@ -295,6 +296,7 @@ func CreateIPv6RouteRule( tableNum , tablePriority int , logicalNot bool , srcNe
 
 	rule := netlink.NewRule()
 	rule.Table = tableNum
+	rule.Family = unix.AF_INET6
 	rule.Src = &ToSrcNet
 	rule.Dst = &ToDstNet
 	rule.Priority = tablePriority
@@ -395,6 +397,7 @@ func DelIPv4RouteRule( tableNum , tablePriority int , logicalNot bool , srcNet ,
 
 	rule := netlink.NewRule()
 	rule.Table = tableNum
+	rule.Family = unix.AF_INET
 	rule.Src = &ToSrcNet
 	rule.Dst = &ToDstNet
 	rule.Priority = tablePriority
@@ -496,6 +499,7 @@ func DelIPv6RouteRule( tableNum , tablePriority int , logicalNot bool , srcNet ,
 
 	rule := netlink.NewRule()
 	rule.Table = tableNum
+	rule.Family = unix.AF_INET6
 	rule.Src = &ToSrcNet
 	rule.Dst = &ToDstNet
 	rule.Priority = tablePriority

@@ -83,7 +83,7 @@ func Test_ipv6rule(t *testing.T){
         for _ , k := range ruleList {
             fmt.Printf( " ------------   \n"  )
             // https://godoc.org/github.com/vishvananda/netlink#Rule
-            fmt.Printf( " rule = %v   \n" ,   k  )
+            fmt.Printf( " get rule = %v   \n" ,   k  )
 
         }
     }
@@ -94,17 +94,17 @@ func Test_ipv6rule(t *testing.T){
         for _ , k := range ruleList {
             fmt.Printf( " ------------   \n"  )
             // https://godoc.org/github.com/vishvananda/netlink#Rule
-            fmt.Printf( " rule = %v   \n" ,   k  )
+            fmt.Printf( " get netns rule = %v   \n" ,   k  )
 
         }
     }
 
 
     tableNum:=100 
-    tablePriority:=3000  
+    tablePriority:=3008
     logicalNot:=false 
-    srcNet:="fd01::/64"  
-    dstNet:="fd02::/64"  
+    srcNet:="fd01::/64"
+    dstNet:="fd02::/64"
     InIf:="dce-ext"
     OutIf:="dce-ovs"
     // tableNum:=100 
