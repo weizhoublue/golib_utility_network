@@ -4,7 +4,9 @@ import(
     utility "github.com/weizhouBlue/golib_utility_network"
     "fmt"
     "testing"
-    
+ 
+     "github.com/vishvananda/netlink"
+    "net"   
 )
 
 
@@ -224,4 +226,43 @@ func Test_ipv6entry(t *testing.T){
 
 }
 
+
+
+
+
+func Test_raw(t *testing.T){
+
+    m:=netlink.Route{
+                LinkIndex: 437  , 
+                Dst: &net.IPNet{
+                        IP: net.ParseIP("1.1.1.1") ,
+                        Mask: net.CIDRMask( 32 , 32) ,
+                    } , 
+                Table: 99 ,
+            }
+
+    fmt.Printf("%v \n" , m)
+    if err := netlink.RouteAdd(&m); err != nil {
+            fmt.Printf("%v \n" , err)
+    }
+
+
+
+    n:=netlink.Route{
+                LinkIndex: 437  , 
+                Dst: &net.IPNet{
+                        IP: net.ParseIP("fd11::2") ,
+                        Mask: net.CIDRMask( 128 , 128) ,
+                    } , 
+                Table: 99 ,
+            }
+
+    fmt.Printf("%v \n" , m)
+    if err := netlink.RouteAdd(&n); err != nil {
+            fmt.Printf("%v \n" , err)
+    }
+
+
+
+}
 
