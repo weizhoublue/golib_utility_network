@@ -357,6 +357,15 @@ func Test_link(t *testing.T){
 
 
 
+func Test_ip6(t *testing.T){
 
+    ip:="fd11:1::2"
+    if new := utility.ConvertIPv6FullFormat(ip) ; len(new)>0 {
+        fmt.Printf( "ip %v to %v   \n" ,  ip, new  )        
+    }else{
+        fmt.Printf( "failed %v   \n" ,   ip  )
+    }
+
+}
 
 

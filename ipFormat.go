@@ -4,7 +4,6 @@ import (
 	"net"
 	"strings"
 	"strconv"
-	
 )
 // https://godoc.org/net
 
@@ -37,6 +36,8 @@ func CheckIPTypeUnicast( ip string ) (bool , error)
 func CheckIPTypeLoopback( ip string ) (bool , error) 
 func CheckIPTypeUnspecified( ip string ) (bool , error) 
 func CheckIPTypeLinkLocalUnicast( ip string ) (bool , error) 
+
+func ConvertIPv6FullFormat() string
 
 */
 
@@ -420,4 +421,23 @@ func CheckIPTypeLinkLocalUnicast( ip string ) (bool , error) {
 	return result.IsLinkLocalUnicast() , nil
 }
 
+
+
+ // ip fd11:1::2 to fd1101000000000002 
+func ConvertIPv6FullFormat( ip string ) string  {
+	result := net.ParseIP(ip)
+	if result==nil {
+		return ""
+	}
+	if result.To4()!=nil {
+		return ""
+	}
+	a:=[]byte( result.To16() )
+
+	b:=""
+	for _ , v:=range a {
+		b+=fmt.Sprintf("%02x", v)
+	}
+	return b
+}
 
