@@ -453,8 +453,8 @@ func GetIPv6SolicitedNodeAddress( unicastIp string ) (  string , error ) {
 		return "" , fmt.Errorf("failed to parse ipv6 address")
 	}
 
-	if s , e:= ndp.SolicitedNodeMulticast(result) ; e!=nil {
-		return "" , e
+	if s , e:= ndp.SolicitedNodeMulticast(result) ; e!=nil || len(s.String())==0 {
+		return "" , fmt.Errorf("fail: %v" , e)
 	}else{
 		return s.String() , nil
 	}
