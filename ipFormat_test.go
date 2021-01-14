@@ -367,7 +367,7 @@ func Test_ip6(t *testing.T){
     }
 
     a:="fc01::1111:2345"
-    if solictIp , e := utility.GetIPv6SolicitedNodeAddress(a) ; e!=nil ||  len(solictIp)==0 {
+    if solictIp , e := utility.GetIPv6SolicitedNodeAddress(a) ; e!=nil {
         fmt.Printf( "failed to  GetIPv6SolicitedNodeAddress: %v   \n" , e  )        
     }else{
         fmt.Printf( " %v SolicitedNodeAddress %v  \n" ,   a , solictIp  )
