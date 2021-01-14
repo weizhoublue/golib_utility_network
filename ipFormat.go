@@ -4,6 +4,7 @@ import (
 	"net"
 	"strings"
 	"strconv"
+	"github.com/mdlayher/ndp"
 )
 // https://godoc.org/net
 
@@ -441,3 +442,21 @@ func ConvertIPv6FullFormat( ip string ) string  {
 	return b
 }
 
+// fc01::1111:2345 -> ff02::1:ff11:2345
+func GetIPv6SolicitedNodeAddress( unicastIp string ) (  string , error ) {
+	if CheckIPv6Format( unicastIp )==false {
+		return "" , fmt.Errorf("invalid ipv6 address")
+	}
+
+	result := net.ParseIP(unicastIp)
+	if result==nil {
+		return "" , fmt.Errorf("failed to parse ipv6 address")
+	}
+
+	if s , e:= ndp.SolicitedNodeMulticast(result) ; e!=nil {
+		return "" , e
+	}else{
+		return s.String() , nil
+	}
+
+}
