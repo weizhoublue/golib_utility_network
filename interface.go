@@ -48,7 +48,7 @@ func GetInterfaceByName( name string )( netlink.Link , error )
 func GetInterfaceByNameInNetns( pid int , name string )( netlink.Link , error )
 func GetInterfaceNameByIndex( index int )( netlink.Link , error )
 func GetInterfaceNameByIndexInNetns( pid int , index int )( netlink.Link , error )
-func GetInterfaceChildByName( name string )( []netlink.Link , error )
+func GetInterfaceVlanChildByName( name string )( []netlink.Link , error )
 
 
 func SetInterfaceUp( interfaceName string ) error 
@@ -185,7 +185,7 @@ func GetInterfaceNameByIndexInNetns( pid int , index int )( netlink.Link , error
 }
 
 
-func GetInterfaceChildByName( name string )( []netlink.Link , error ){
+func GetInterfaceVlanChildByName( name string )( []netlink.Link , error ){
 	if Parlink , e:= GetInterfaceByName( name  ) ; e!=nil {
 		return nil , e
 	}else{
@@ -197,9 +197,15 @@ func GetInterfaceChildByName( name string )( []netlink.Link , error ){
 
 		childIntList:=[]netlink.Link{}
 		for _ , v :=range allInt {
-			if v.Attrs().ParentIndex == Parlink.Attrs().Index {
+			// 如果只是判断 ParentIndex , 发现 会出现bug 不准 ， 故再判断 类型
+			//  int &{3 1500 1000 ens224 00:50:56:b4:0f:42 up|broadcast|multicast 69699 0 0 <nil>  0xc0005f6000 0 0xc000244820 ether <nil> up 0 8 8 65536 65535 [] 0 <nil>}  ; 0
+			//  int &{15 1450 0 califc332152474 ee:ee:ee:ee:ee:ee up|broadcast|multicast 69699 3 0 <nil>  0xc0005f6a80 0 0xc000244900 ether <nil> up 6 1 1 65536 65535 [] 0 <nil>}  ; 6
+			//  int &{20 1500 1000 dce-mng 00:50:56:b4:0f:42 up|broadcast|multicast 69699 3 0 <nil>  0xc0005f6d80 0 0xc000244940 ether <nil> up 0 1 1 65536 65535 [] 0 <nil>}  ; 0
+			
+			if v.Attrs().ParentIndex == Parlink.Attrs().Index && v.Type()=="vlan" {
 				childIntList=append(childIntList,v)
 			}
+
 		}
 
 		return childIntList , nil
